@@ -1,33 +1,49 @@
 import React from "react";
 
-function RenderBlock({block}){
-    switch(block.type){
+export default function RenderBlock({ block }) {
+  switch (block.type) {
+    case "text":
+      return (
+        <div className="bg-gray-100 p-4 rounded-lg shadow text-gray-800">
+          Sample text goes here…
+        </div>
+      );
 
-        case "text":
-            return <p className="text-lg font-medium text-gray-800 leading-relaxed">Sample text goes here...</p>
+    case "image":
+      return (
+        <div className="bg-gray-100 p-4 rounded-lg shadow">
+          <img
+            className="rounded-lg w-full border"
+            src="https://via.placeholder.com/400x200"
+            alt="placeholder"
+          />
+        </div>
+      );
 
-        case "image":
-            return (
-                <div className="border border-gray-300 rounded-xl p-3 bg-white shadow-sm">
-                    <img src="https://via.placeholder.com/400x200" className="rounded" alt="placeholder" />
-                </div>
+    case "button":
+      return (
+        <div className="bg-gray-100 p-4 rounded-lg shadow">
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            Click Me
+          </button>
+        </div>
+      );
 
-            ) 
+    case "divider":
+      return (
+        <div className="bg-gray-100 p-2 rounded-lg shadow">
+          <hr className="border-gray-400" />
+        </div>
+      );
 
-        case "button":
-            return (
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Click Me</button>
-            )
-            
-        case "divider":
-            return <hr className="my-6 border-gray-400"/>;
+    case "footer":
+      return (
+        <div className="bg-gray-100 p-4 rounded-lg shadow text-gray-700">
+          @LK Web Builder — All rights reserved.
+        </div>
+      );
 
-        case "footer":
-            return <p className="text-gray-700 text-sm tracking-wide">@LK Web Builder - All rights reserved.</p>;
-
-        default:
-            return null;
-    }
+    default:
+      return null;
+  }
 }
-
-export default RenderBlock;

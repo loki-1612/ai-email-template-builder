@@ -1,29 +1,23 @@
 import React from "react";
 import RenderBlock from "./RenderBlock";
 
-function Canvas({blocks}){
-    return(
-        <div className="bg-white p-6 rounded-xl shadow-md min-h-[600px] border border-gray-200 0verflow-y-auto">
-            <h2 className="font-semibold text-lg mb-4 bg-gray-500">
-                Canvas
-            </h2>
 
-            {blocks.length===0 && (
-                <p className="text-gray-400 mt-20 text-center">
-                Drag or click elements to build your email...
-            </p>
-            )}
+export default function Canvas({ blocks }) {
+  return (
+    <div className="bg-gray-50 p-6 rounded-xl shadow min-h-[500px]">
+      <h2 className="text-xl font-semibold mb-4">Canvas</h2>
 
-            {blocks.map((block, index)=>(
-                <div key ={index} className="p-4 rounded-lg mb-4 bg-gray-100 border border-gray-300 hover:shadow transition">
-                    
-                    <RenderBlock block={block}/>
-                </div>
-            ))}
-            
-        </div>
-    );
+      {blocks.length === 0 && (
+        <p className="text-gray-500 text-center mt-20">
+          Add blocks to start building your email…
+        </p>
+      )}
 
+      <div className="space-y-4">
+        {blocks.map((block, index) => (
+          <RenderBlock key={index} block={block} />
+        ))}
+      </div>
+    </div>
+  );
 }
-
-export default Canvas;

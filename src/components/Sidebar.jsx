@@ -1,18 +1,34 @@
 import React from "react";
 
-function Sidebar({addBlock}){
-    return (
-        <div className="bg-white p-4 rounded-xl shadow h-full">
-            <h2 className="font-semibold text-lg mb-3 ml-10 text-black">Elements</h2>
-            <div className="flex flex-col gap-2">
-                <button className="bg-gray-900 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow" onClick={()=>addBlock("image")}>Image Block</button>
-                <button className="bg-gray-900 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow" onClick={()=>addBlock("text")}>Text Block</button>
-                <button className="bg-gray-900 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow" onClick={()=>addBlock("button")}>Button</button>
-                <button className="bg-gray-900 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow" onClick={()=>addBlock("divider")}>Divider</button>
-                <button className="bg-gray-900 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition shadow" onClick={()=>addBlock("footer")}>Footer</button>
-            </div>
-        </div>
-    );
-}
+export default function Sidebar({ addBlock }) {
+  return (
+    <aside className="bg-gray-200 p-4 rounded-xl shadow space-y-3">
+      <h2 className="text-lg font-semibold mb-2">Add Blocks</h2>
 
-export default Sidebar;
+      <button className="w-full py-2 bg-blue-600 text-white rounded-lg"
+        onClick={() => addBlock("text")}>
+        Text Block
+      </button>
+
+      <button className="w-full py-2 bg-blue-600 text-white rounded-lg"
+        onClick={() => addBlock("image")}>
+        Image Block
+      </button>
+
+      <button className="w-full py-2 bg-blue-600 text-white rounded-lg"
+        onClick={() => addBlock("button")}>
+        Button Block
+      </button>
+
+      <button className="w-full py-2 bg-blue-600 text-white rounded-lg"
+        onClick={() => addBlock("divider")}>
+        Divider
+      </button>
+
+      <button className="w-full py-2 bg-blue-600 text-white rounded-lg"
+        onClick={() => addBlock("footer")}>
+        Footer
+      </button>
+    </aside>
+  );
+}

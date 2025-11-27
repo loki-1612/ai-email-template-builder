@@ -1,27 +1,38 @@
 import React from "react";
 import RenderBlock from "./RenderBlock";
 
-function Preview({blocks}){
-    return(
-        <div className="bg-white p-6 rounded-xl shadow-md min-h-[600px] border border-gray-200">
-            <h2 className="font-semibold text-lg mb-4 bg-gray-500">
-                Preview
-            </h2>
+export default function Preview({ blocks }) {
+  return (
+    <div className="bg-gray-50 p-4 rounded-xl shadow min-h-[350px]">
+      <h2 className="text-lg font-semibold mb-4">Preview</h2>
 
-            {blocks.length === 0 && (
-                <p className="text-gray-400 mt-20 text-center">
-                Preview will appear here...
-            </p>
+      {blocks.length === 0 && (
+        <p className="text-gray-400">Preview will appear here…</p>
+      )}
+
+      <div className="space-y-4">
+        {blocks.map((block, index) => (
+          <div key={index}>
+            {block.type === "text" && <p className="text-gray-900">Sample text goes here…</p>}
+            {block.type === "image" && (
+              <img
+                className="rounded-lg"
+                src="https://via.placeholder.com/400x200"
+                alt="image"
+              />
             )}
-
-            {blocks.map((block, index) => (
-                <div key={index} className="mb-3">
-                    <RenderBlock block={block} />
-                </div>
-            ))}
-        </div>
-    )
-
+            {block.type === "button" && (
+              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                Click Me
+              </button>
+            )}
+            {block.type === "divider" && <hr />}
+            {block.type === "footer" && (
+              <p className="text-gray-700">@LK Web Builder — All rights reserved.</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
-
-export default Preview;
