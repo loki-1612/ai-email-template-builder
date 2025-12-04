@@ -4,44 +4,41 @@ export default function RenderBlock({ block }) {
   switch (block.type) {
     case "text":
       return (
-        <div className="bg-gray-100 p-4 rounded-lg shadow text-gray-800">
-          Sample text goes here…
-        </div>
+        <p
+          style={{
+            textAlign: block.settings.align,
+            fontSize: block.settings.fontSize,
+            color: block.settings.color,
+          }}
+        >
+          {block.content}
+        </p>
       );
 
     case "image":
       return (
-        <div className="bg-gray-100 p-4 rounded-lg shadow">
-          <img
-            className="rounded-lg w-full border"
-            src="https://via.placeholder.com/400x200"
-            alt="placeholder"
-          />
-        </div>
+        <img
+          className="rounded-lg w-full border"
+          src={block.content}
+          alt="img-block"
+        />
       );
 
     case "button":
       return (
-        <div className="bg-gray-100 p-4 rounded-lg shadow">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
-            Click Me
-          </button>
-        </div>
+        <a
+          href={block.content.url}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg inline-block"
+        >
+          {block.content.label}
+        </a>
       );
 
     case "divider":
-      return (
-        <div className="bg-gray-100 p-2 rounded-lg shadow">
-          <hr className="border-gray-400" />
-        </div>
-      );
+      return <hr className="border-gray-300" />;
 
     case "footer":
-      return (
-        <div className="bg-gray-100 p-4 rounded-lg shadow text-gray-700">
-          @LK Web Builder — All rights reserved.
-        </div>
-      );
+      return <p className="text-gray-600 text-sm">{block.content}</p>;
 
     default:
       return null;

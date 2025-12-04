@@ -1,7 +1,6 @@
 import React from "react";
 import RenderBlock from "./RenderBlock";
 
-
 export default function Canvas({ blocks }) {
   return (
     <div className="bg-gray-50 p-6 rounded-xl shadow min-h-[500px]">
@@ -14,8 +13,10 @@ export default function Canvas({ blocks }) {
       )}
 
       <div className="space-y-4">
-        {blocks.map((block, index) => (
-          <RenderBlock key={index} block={block} />
+        {blocks.map((block) => (
+          <div key={block.id} className="border p-4 rounded-lg bg-white">
+            <RenderBlock block={block} />
+          </div>
         ))}
       </div>
     </div>
