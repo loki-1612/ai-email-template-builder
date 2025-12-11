@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Global Light Theme */
+body {
+  font-family: system-ui, sans-serif;
+}
