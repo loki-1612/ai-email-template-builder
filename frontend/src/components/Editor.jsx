@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { generateText } from "../utils/ai";
 
-let isGenerating = false; // cooldown
+let isGenerating = false; // cooldown flag
 
 export default function Editor({ selectedBlock, blocks, updateBlock }) {
-  if (selectedBlock === null) {
+  if (!selectedBlock) {
     return (
       <div className="bg-white p-4 rounded-xl shadow text-center text-gray-400">
         Select a block to edit
@@ -26,7 +26,10 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     persuasive: "Persuasive 🎯",
   };
 
-  async function handleGenerate(promptType) {
+  // -----------------------------
+  // 🔥 AI GENERATION HANDLER
+  // -----------------------------
+  async function handleGenerate(kind) {
     if (isGenerating) return;
 
     isGenerating = true;
@@ -34,21 +37,22 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
 
     let prompt = "";
 
-    if (promptType === "headline") {
-      prompt = `Write an email headline in a **${tone}** tone.`;
-    } else if (promptType === "description") {
-      prompt = `Write a 23 sentence email description in a **${tone}** tone.`;
+    if (kind === "headline") {
+      prompt = `Write an email headline in a ${tone} tone.`;
+    } else if (kind === "description") {
+      prompt = `Write a 2-3 sentence email description in a ${tone} tone.`;
+    } else if (kind === "subject") {
+      prompt = `Write a short subject line in a ${tone} tone.`;
     }
 
     try {
       const aiText = await generateText(prompt);
 
       updateBlock(index, {
-        ...block,
-        content: aiText,
+        content: aiText, // only update content
       });
-    } catch (error) {
-      console.error("AI Error:", error);
+    } catch (err) {
+      console.error("AI Error:", err);
     }
 
     setLoading(false);
@@ -58,74 +62,147 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     }, 1200);
   }
 
-  return (
-    <div className="bg-white p-4 rounded-xl shadow space-y-4">
-      <h3 className="text-lg font-semibold text-gray-700">Edit Text</h3>
+  // -----------------------------
+  // 🔧 UI FOR DIFFERENT BLOCK TYPES
+  // -----------------------------
 
-      {/* TEXTAREA */}
-      <textarea
-        value={block.content}
-        onChange={(e) => {
-          updateBlock(selectedBlock, e.target.value);
-          e.target.style.height = "auto";
-          e.target.style.height = e.target.scrollHeight + "px";
-        }}
-        className="border p-3 w-full rounded-lg h-32 shadow-sm focus:ring-2 focus:ring-blue-400"
-      />
+  // ⭐ TEXT BLOCK EDITOR
+  if (type === "text") {
+    return (
+      <div className="bg-white p-4 rounded-xl shadow space-y-5">
+        <h3 className="text-lg font-semibold text-gray-700">Edit Text</h3>
 
-      {/* 🔥 TONE SLIDER */}
-      <div>
-        <label className="text-sm font-semibold text-gray-600">
-          AI Tone: <span className="text-blue-600">{toneLabels[tone]}</span>
-        </label>
-        <select
-          value={tone}
-          onChange={(e) => setTone(e.target.value)}
-          className="mt-1 w-full border rounded-lg p-2 bg-gray-50 shadow-sm"
-        >
-          <option value="friendly">Friendly 😊</option>
-          <option value="professional">Professional 💼</option>
-          <option value="urgent">Urgent ⚡</option>
-          <option value="casual">Casual 😎</option>
-          <option value="persuasive">Persuasive 🎯</option>
-        </select>
+        <textarea
+          value={block.content}
+          onChange={(e) => {
+            updateBlock(index, { content: e.target.value });
+            e.target.style.height = "auto";
+            e.target.style.height = e.target.scrollHeight + "px";
+          }}
+          className="border p-3 w-full rounded-lg min-h-[80px] shadow-sm resize-none"
+        />
+
+        {/* Tone Selector */}
+        <div>
+          <label className="text-sm font-semibold text-gray-600">
+            AI Tone: <span className="text-blue-600">{toneLabels[tone]}</span>
+          </label>
+
+          <select
+            value={tone}
+            onChange={(e) => setTone(e.target.value)}
+            className="mt-1 w-full border rounded-lg p-2 bg-gray-50 shadow-sm"
+          >
+            <option value="friendly">Friendly 😊</option>
+            <option value="professional">Professional 💼</option>
+            <option value="urgent">Urgent ⚡</option>
+            <option value="casual">Casual 😎</option>
+            <option value="persuasive">Persuasive 🎯</option>
+          </select>
+        </div>
+
+        {/* AI Buttons */}
+        <div className="space-y-2">
+          <button
+            onClick={() => handleGenerate("headline")}
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+          >
+            {loading ? "✨ Generating…" : "⚡ Generate Headline"}
+          </button>
+
+          <button
+            onClick={() => handleGenerate("description")}
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+          >
+            {loading ? "✨ Generating…" : "⚡ Generate Description"}
+          </button>
+
+          <button
+            onClick={() => handleGenerate("subject")}
+            disabled={loading}
+            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+          >
+            {loading ? "✨ Generating…" : "⚡ Generate Subject Line"}
+          </button>
+        </div>
+
+        {/* Loading Box */}
+        <div className="bg-gray-50 p-3 rounded-lg border shadow-inner min-h-[60px] flex items-center justify-center">
+          <p className="text-gray-600 text-sm text-center">
+            {loading
+              ? "✨ AI is generating content…"
+              : "AI ready! See the result in the preview →"}
+          </p>
+        </div>
       </div>
+    );
+  }
 
-      {/* AI BUTTONS */}
-      <div className="space-y-2">
-        <button
-          onClick={() => handleGenerate("headline")}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white py-2 rounded-lg shadow hover:opacity-90 transition"
-        >
-          {loading ? "✨ Generating..." : "⚡ Generate Headline"}
-        </button>
+  // ⭐ IMAGE BLOCK
+  if (type === "image") {
+    return (
+      <div className="bg-white p-4 rounded-xl shadow space-y-3">
+        <h3 className="text-lg font-semibold text-gray-700">Edit Image Link</h3>
 
-        <button
-          onClick={() => handleGenerate("description")}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-gray-900 to-gray-700 text-white py-2 rounded-lg shadow hover:opacity-90 transition"
-        >
-          {loading ? "✨ Generating..." : "⚡ Generate Description"}
-        </button>
-
-        <button
-          onClick={() => handleGenerate("subject")}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-gray-900 to-gray-600 text-white px-4 py-2 rounded-lg shadow"
-        >
-          {loading ? "✨ Creating Subject Line..." : "⚡ Generate Subject Line"}
-        </button>
+        <input
+          type="text"
+          value={block.content}
+          onChange={(e) => updateBlock(index, { content: e.target.value })}
+          className="border p-2 w-full rounded-lg"
+        />
       </div>
+    );
+  }
 
-      {/* AI OUTPUT PREVIEW BOX */}
-      <div className="bg-gray-50 p-3 rounded-lg border shadow-inner min-h-[80px] flex items-center justify-center">
-        <p className="text-gray-600 text-sm text-center">
-          {loading
-            ? "✨ AI is generating content…"
-            : "AI is ready! Preview the result on the right →"}
-        </p>
+  // ⭐ BUTTON BLOCK
+  if (type === "button") {
+    return (
+      <div className="bg-white p-4 rounded-xl shadow space-y-3">
+        <h3 className="text-lg font-semibold text-gray-700">Edit Button</h3>
+
+        <input
+          type="text"
+          value={block.content.label}
+          onChange={(e) =>
+            updateBlock(index, {
+              content: { ...block.content, label: e.target.value },
+            })
+          }
+          className="border p-2 w-full rounded-lg"
+          placeholder="Button Label"
+        />
+
+        <input
+          type="text"
+          value={block.content.url}
+          onChange={(e) =>
+            updateBlock(index, {
+              content: { ...block.content, url: e.target.value },
+            })
+          }
+          className="border p-2 w-full rounded-lg"
+          placeholder="Button URL"
+        />
       </div>
-    </div>
-  );
+    );
+  }
+
+  // ⭐ FOOTER BLOCK
+  if (type === "footer") {
+    return (
+      <div className="bg-white p-4 rounded-xl shadow">
+        <h3 className="text-lg font-semibold text-gray-700">Edit Footer</h3>
+
+        <textarea
+          value={block.content}
+          onChange={(e) => updateBlock(index, { content: e.target.value })}
+          className="border p-2 w-full rounded-lg h-24"
+        />
+      </div>
+    );
+  }
+
+  return null;
 }

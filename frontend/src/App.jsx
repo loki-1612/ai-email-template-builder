@@ -1,4 +1,4 @@
-import React, { useState } from "react";   
+import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Canvas from "./components/Canvas";
@@ -7,9 +7,28 @@ import Editor from "./components/Editor";
 
 export default function App() {
   const [blocks, setBlocks] = useState([]);
-  const [selectedBlock, setSelectedBlock] = useState(null); 
+  const [selectedBlock, setSelectedBlock] = useState(null);
 
-  // ⭐ Day 4 - schema-based block creation
+  // --------------------------------------------------
+  // ⭐ LOAD from localStorage (Day 10)
+  // --------------------------------------------------
+  useEffect(() => {
+    const saved = localStorage.getItem("email_blocks");
+    if (saved) {
+      setBlocks(JSON.parse(saved));
+    }
+  }, []);
+
+  // --------------------------------------------------
+  // ⭐ SAVE to localStorage helper
+  // --------------------------------------------------
+  const saveToLocal = (data) => {
+    localStorage.setItem("email_blocks", JSON.stringify(data));
+  };
+
+  // --------------------------------------------------
+  // ⭐ DAY 4 — Schema-based block creation
+  // --------------------------------------------------
   const addBlock = (type) => {
     let newBlock = {
       id: crypto.randomUUID(),
@@ -19,7 +38,7 @@ export default function App() {
         align: "left",
         fontSize: 16,
         color: "#1e293b",
-      },
+      }
     };
 
     if (type === "text") newBlock.content = "Sample text goes here…";
@@ -28,22 +47,30 @@ export default function App() {
     if (type === "footer") newBlock.content = "@LK Web Builder — All rights reserved.";
     if (type === "divider") newBlock.content = null;
 
-    setBlocks((prev) => [...prev, newBlock]);
+    const updated = [...blocks, newBlock];
+    setBlocks(updated);
+    saveToLocal(updated); // persist
   };
 
-  // ⭐ DAY 5 — Reorder blocks (drag & drop)
+  // --------------------------------------------------
+  // ⭐ DAY 5 — drag & drop reorder
+  // --------------------------------------------------
   const reorderBlocks = (fromIndex, toIndex) => {
     const updated = [...blocks];
     const movedItem = updated.splice(fromIndex, 1)[0];
     updated.splice(toIndex, 0, movedItem);
     setBlocks(updated);
+    saveToLocal(updated);
   };
 
-  // ⭐ DAY 6 — Update block content/settings
+  // --------------------------------------------------
+  // ⭐ DAY 6 — update block content/settings
+  // --------------------------------------------------
   const updateBlock = (index, newData) => {
     const updated = [...blocks];
     updated[index] = { ...updated[index], ...newData };
     setBlocks(updated);
+    saveToLocal(updated);
   };
 
   return (
@@ -52,26 +79,31 @@ export default function App() {
 
       <div className="grid grid-cols-12 gap-4 mt-5">
         
+        {/* Sidebar */}
         <div className="col-span-2">
           <Sidebar addBlock={addBlock} />
         </div>
 
+        {/* Canvas */}
         <div className="col-span-6">
           <Canvas
             blocks={blocks}
+            setBlocks={setBlocks}
             reorderBlocks={reorderBlocks}
-            setSelectedBlock={setSelectedBlock}  
+            setSelectedBlock={setSelectedBlock}
           />
         </div>
 
+        {/* Editor */}
         <div className="col-span-2">
           <Editor
-            selectedBlock={selectedBlock}  
+            selectedBlock={selectedBlock}
             blocks={blocks}
             updateBlock={updateBlock}
           />
         </div>
 
+        {/* Preview */}
         <div className="col-span-2">
           <Preview blocks={blocks} />
         </div>
