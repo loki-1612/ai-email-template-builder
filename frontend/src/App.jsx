@@ -38,13 +38,15 @@ export default function App() {
         align: "left",
         fontSize: 16,
         color: "#1e293b",
-      }
+      },
     };
 
     if (type === "text") newBlock.content = "Sample text goes here…";
-    if (type === "image") newBlock.content = "https://via.placeholder.com/400x200";
+    if (type === "image")
+      newBlock.content = "https://via.placeholder.com/400x200";
     if (type === "button") newBlock.content = { label: "Click Me", url: "#" };
-    if (type === "footer") newBlock.content = "@LK Web Builder — All rights reserved.";
+    if (type === "footer")
+      newBlock.content = "@LK Web Builder — All rights reserved.";
     if (type === "divider") newBlock.content = null;
 
     const updated = [...blocks, newBlock];
@@ -75,10 +77,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen px-6 bg-gray-100">
-      <Header />
+      <Header
+        blocks={blocks}
+        setBlocks={setBlocks}
+        setSelectedBlock={setSelectedBlock}
+      />
 
       <div className="grid grid-cols-12 gap-4 mt-5">
-        
         {/* Sidebar */}
         <div className="col-span-2">
           <Sidebar addBlock={addBlock} />
@@ -107,7 +112,6 @@ export default function App() {
         <div className="col-span-2">
           <Preview blocks={blocks} />
         </div>
-
       </div>
     </div>
   );
