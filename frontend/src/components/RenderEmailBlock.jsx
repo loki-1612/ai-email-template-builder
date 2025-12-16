@@ -1,19 +1,24 @@
 import React from "react";
+
 export default function RenderEmailBlock({ block }) {
+  if (!block) return null;
+
+  const settings = block.settings || {};
+
   switch (block.type) {
     case "text":
       return (
         <p
-        className="text-gray-800 leading-relaxed whitespace-pre-wrap wrap-break-word"
-        style={{
-          fontSize: block.settings.fontSize,
-          textAlign: block.settings.align,
-          color: block.settings.color,
+          className="leading-relaxed whitespace-pre-wrap break-words"
+          style={{
+            fontSize: `${settings.fontSize || 16}px`,
+            textAlign: settings.align || "left",
+            color: settings.color || "#1f2937",
+            margin: "0",
           }}
         >
           {block.content}
         </p>
-
       );
 
     case "image":
@@ -21,16 +26,20 @@ export default function RenderEmailBlock({ block }) {
         <img
           src={block.content}
           alt="email"
-          className="w-full rounded-lg shadow"
+          className="w-full rounded-lg shadow my-3"
         />
       );
 
     case "button":
       return (
-        <div className="text-center">
+        <div
+          style={{
+            textAlign: settings.align || "center",
+          }}
+        >
           <a
             href={block.content.url}
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700"
+            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition"
           >
             {block.content.label}
           </a>
@@ -38,11 +47,11 @@ export default function RenderEmailBlock({ block }) {
       );
 
     case "divider":
-      return <hr className="border-gray-300 my-4" />;
+      return <hr className="border-gray-300 my-6" />;
 
     case "footer":
       return (
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-gray-500 text-center mt-6">
           {block.content}
         </p>
       );

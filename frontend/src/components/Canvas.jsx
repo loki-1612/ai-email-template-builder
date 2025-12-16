@@ -18,7 +18,9 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
   // ---------- DRAG OVER ----------
   const handleDragOver = (e, index) => {
     e.preventDefault();
-    setHoverIndex(index);
+    if (hoverIndex !== index) {
+      setHoverIndex(index);
+    }
   };
 
   // ---------- DROP (REORDER) ----------
@@ -36,26 +38,19 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
     setHoverIndex(null);
   };
 
-  // ---------- DELETE BLOCK ----------
+  // ---------- DELETE ----------
   const deleteBlock = (index) => {
     const updated = blocks.filter((_, i) => i !== index);
     setBlocks(updated);
     saveToLocal(updated);
-
-    // FIX: Reset selected block after deletion
     setSelectedBlock(null);
   };
 
-  // ---------- DUPLICATE BLOCK ----------
+  // ---------- DUPLICATE ----------
   const duplicateBlock = (index) => {
-    const copy = {
-      ...blocks[index],
-      id: Date.now(),
-    };
-
+    const copy = { ...blocks[index], id: Date.now() };
     const updated = [...blocks];
     updated.splice(index + 1, 0, copy);
-
     setBlocks(updated);
     saveToLocal(updated);
   };
@@ -74,7 +69,7 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
         <AnimatePresence>
           {blocks.map((block, index) => (
             <motion.div key={block.id} layout>
-              {/* ---------- DROP INDICATOR ABOVE ---------- */}
+              {/* DROP INDICATOR */}
               {hoverIndex === index && dragIndex !== null && (
                 <motion.div
                   layout
@@ -85,7 +80,7 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
                 />
               )}
 
-              {/* ---------- BLOCK CARD ---------- */}
+              {/* BLOCK CARD */}
               <motion.div
                 draggable
                 onDragStart={() => handleDragStart(index)}
@@ -94,13 +89,23 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
                 onClick={() => setSelectedBlock({ index, type: block.type })}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className={`relative p-4 rounded-lg shadow border cursor-pointer transition bg-gray-50 hover:bg-gray-100 ${
-                  dragIndex === index
-                    ? "opacity-50 border-blue-500"
-                    : "border-gray-300"
-                }`}
+                className={`relative p-4 rounded-lg border cursor-pointer transition
+                  
+                  ${dragIndex === index ? "opacity-50" : ""}
+
+                  ${
+                    // ⭐ DAY 12: Selected block highlight
+                    block?.id === blocks[index]?.id &&
+                    "border-blue-500 bg-blue-50 shadow-md"
+                  }
+
+                  ${
+                    dragIndex !== index &&
+                    "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                  }
+                `}
               >
-                {/* DELETE + DUPLICATE BUTTONS */}
+                {/* ACTION BUTTONS */}
                 <div className="absolute right-3 top-3 flex gap-3">
                   <button
                     className="text-red-500 hover:text-red-700 text-sm"
@@ -123,20 +128,9 @@ export default function Canvas({ blocks, setBlocks, setSelectedBlock }) {
                   </button>
                 </div>
 
-                {/* RENDER BLOCK */}
+                {/* BLOCK CONTENT */}
                 <RenderBlock block={block} />
               </motion.div>
-
-              {/* ---------- DROP INDICATOR AFTER LAST ELEMENT ---------- */}
-              {index === blocks.length - 1 && hoverIndex === blocks.length && (
-                <motion.div
-                  layout
-                  className="h-2 bg-blue-300 rounded-md mt-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                />
-              )}
             </motion.div>
           ))}
         </AnimatePresence>

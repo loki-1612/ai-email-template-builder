@@ -4,7 +4,8 @@ import { generateText } from "../utils/ai";
 let isGenerating = false; // cooldown flag
 
 export default function Editor({ selectedBlock, blocks, updateBlock }) {
-  if (!selectedBlock) {
+  // ---------- SAFETY ----------
+  if (!selectedBlock || !blocks[selectedBlock.index]) {
     return (
       <div className="bg-white p-4 rounded-xl shadow text-center text-gray-400">
         Select a block to edit
@@ -12,6 +13,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     );
   }
 
+  // ---------- BASIC DATA ----------
   const { index, type } = selectedBlock;
   const block = blocks[index];
 
@@ -26,9 +28,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     persuasive: "Persuasive 🎯",
   };
 
-  // -----------------------------
-  // 🔥 AI GENERATION HANDLER
-  // -----------------------------
+  // ---------- AI GENERATION ----------
   async function handleGenerate(kind) {
     if (isGenerating) return;
 
@@ -47,10 +47,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
 
     try {
       const aiText = await generateText(prompt);
-
-      updateBlock(index, {
-        content: aiText, // only update content
-      });
+      updateBlock(index, { content: aiText });
     } catch (err) {
       console.error("AI Error:", err);
     }
@@ -62,11 +59,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     }, 1200);
   }
 
-  // -----------------------------
-  // 🔧 UI FOR DIFFERENT BLOCK TYPES
-  // -----------------------------
-
-  // ⭐ TEXT BLOCK EDITOR
+  // ---------- TEXT BLOCK ----------
   if (type === "text") {
     return (
       <div className="bg-white p-4 rounded-xl shadow space-y-5">
@@ -79,19 +72,18 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
             e.target.style.height = "auto";
             e.target.style.height = e.target.scrollHeight + "px";
           }}
-          className="border p-3 w-full rounded-lg min-h-[80px] shadow-sm resize-none"
+          className="border p-3 w-full rounded-lg min-h-[80px] resize-none"
         />
 
-        {/* Tone Selector */}
+        {/* AI Tone */}
         <div>
           <label className="text-sm font-semibold text-gray-600">
             AI Tone: <span className="text-blue-600">{toneLabels[tone]}</span>
           </label>
-
           <select
             value={tone}
             onChange={(e) => setTone(e.target.value)}
-            className="mt-1 w-full border rounded-lg p-2 bg-gray-50 shadow-sm"
+            className="mt-1 w-full border rounded-lg p-2 bg-gray-50"
           >
             <option value="friendly">Friendly 😊</option>
             <option value="professional">Professional 💼</option>
@@ -106,7 +98,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
           <button
             onClick={() => handleGenerate("headline")}
             disabled={loading}
-            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+            className="w-full bg-black text-white py-2 rounded-lg"
           >
             {loading ? "✨ Generating…" : "⚡ Generate Headline"}
           </button>
@@ -114,7 +106,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
           <button
             onClick={() => handleGenerate("description")}
             disabled={loading}
-            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+            className="w-full bg-black text-white py-2 rounded-lg"
           >
             {loading ? "✨ Generating…" : "⚡ Generate Description"}
           </button>
@@ -122,14 +114,14 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
           <button
             onClick={() => handleGenerate("subject")}
             disabled={loading}
-            className="w-full bg-black text-white py-2 rounded-lg shadow hover:opacity-90"
+            className="w-full bg-black text-white py-2 rounded-lg"
           >
             {loading ? "✨ Generating…" : "⚡ Generate Subject Line"}
           </button>
         </div>
 
-        {/* Loading Box */}
-        <div className="bg-gray-50 p-3 rounded-lg border shadow-inner min-h-[60px] flex items-center justify-center">
+        {/* Status Box */}
+        <div className="bg-gray-50 p-3 rounded-lg border min-h-[60px] flex items-center justify-center">
           <p className="text-gray-600 text-sm text-center">
             {loading
               ? "✨ AI is generating content…"
@@ -140,12 +132,11 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     );
   }
 
-  // ⭐ IMAGE BLOCK
+  // ---------- IMAGE BLOCK ----------
   if (type === "image") {
     return (
       <div className="bg-white p-4 rounded-xl shadow space-y-3">
-        <h3 className="text-lg font-semibold text-gray-700">Edit Image Link</h3>
-
+        <h3 className="text-lg font-semibold text-gray-700">Edit Image</h3>
         <input
           type="text"
           value={block.content}
@@ -156,7 +147,7 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     );
   }
 
-  // ⭐ BUTTON BLOCK
+  // ---------- BUTTON BLOCK ----------
   if (type === "button") {
     return (
       <div className="bg-white p-4 rounded-xl shadow space-y-3">
@@ -189,12 +180,11 @@ export default function Editor({ selectedBlock, blocks, updateBlock }) {
     );
   }
 
-  // ⭐ FOOTER BLOCK
+  // ---------- FOOTER BLOCK ----------
   if (type === "footer") {
     return (
       <div className="bg-white p-4 rounded-xl shadow">
         <h3 className="text-lg font-semibold text-gray-700">Edit Footer</h3>
-
         <textarea
           value={block.content}
           onChange={(e) => updateBlock(index, { content: e.target.value })}
